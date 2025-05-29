@@ -1,0 +1,2458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>感冒预防卫士</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        body {
+            background-color: #f0f8ff;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #1e90ff;
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        .language-selector {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .profile-btn {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            cursor: pointer;
+            border: 1px solid white;
+            text-decoration: none;
+        }
+        .profile-btn:hover {
+            background-color: white;
+            color: #1e90ff;
+        }
+        .language-btn {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            cursor: pointer;
+            margin-left: 5px;
+            border: 1px solid white;
+            font-size: 14px;
+        }
+        .language-btn.active {
+            background-color: white;
+            color: #1e90ff;
+        }
+        .login-section {
+            display: none;
+        }
+        .temp-chart {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .health-advice {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .feature-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            flex: 1 1 250px;
+        }
+        .age-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            margin-top: 15px;
+        }
+        .age-toggle button {
+            padding: 10px 20px;
+            background-color: #e6e6e6;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .age-toggle button.active {
+            background-color: #1e90ff;
+            color: white;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #1e90ff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #187bcd;
+        }
+        h2 {
+            color: #1e90ff;
+            margin-bottom: 15px;
+        }
+        .chart-placeholder {
+            height: 200px;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            color: #6c757d;
+        }
+        
+        /* 语言相关 */
+        .lang-zh {
+            display: block;
+        }
+        .lang-en {
+            display: none;
+        }
+        html[lang="en"] .lang-zh {
+            display: none;
+        }
+        html[lang="en"] .lang-en {
+            display: block;
+        }
+        
+        /* 登录和注册系统样式 */
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .auth-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-weight: bold;
+            color: #777;
+        }
+        
+        .auth-tab.active {
+            color: #1e90ff;
+            border-bottom: 2px solid #1e90ff;
+        }
+        
+        .auth-form {
+            display: none;
+        }
+        
+        .auth-form.active {
+            display: block;
+        }
+        
+        .error-message {
+            color: #d9534f;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .success-message {
+            color: #5cb85c;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .user-profile {
+            display: none;
+        }
+        
+        .form-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        .form-buttons .forgot-password {
+            color: #1e90ff;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .form-buttons .forgot-password:hover {
+            text-decoration: underline;
+        }
+        
+        .logout-btn {
+            margin-top: 10px;
+            background-color: #f8f9fa;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+        
+        .logout-btn:hover {
+            background-color: #e9ecef;
+        }
+        
+        .welcome-message {
+            margin-bottom: 15px;
+        }
+        
+        /* 体温记录表单样式 */
+        .temp-form {
+            margin-top: 15px;
+            position: relative;
+        }
+        .login-required {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .login-required a {
+            color: #1e90ff;
+            text-decoration: none;
+            margin-top: 10px;
+        }
+        .login-required a:hover {
+            text-decoration: underline;
+        }
+        
+        .temp-form .form-row {
+            display: flex;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        
+        .temp-form label {
+            width: 80px;
+            font-weight: bold;
+        }
+        
+        .temp-form input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        
+        .temp-form input[type="date"] {
+            width: 150px;
+        }
+        
+        .temp-form input[type="number"] {
+            width: 80px;
+        }
+        
+        .temp-records {
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+        
+        .temp-record-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .temp-record-item:last-child {
+            border-bottom: none;
+        }
+        
+        .temp-record-date {
+            font-weight: bold;
+        }
+        
+        .temp-record-value {
+            color: #1e90ff;
+        }
+        
+        .temp-record-value.fever {
+            color: #ff4500;
+        }
+        
+        /* 体温图表容器 */
+        .temp-chart-container {
+            height: 250px;
+            margin-top: 20px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        /* 评论系统样式 */
+        .comments-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .comment-form {
+            margin-bottom: 20px;
+        }
+        
+        .comment-form textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            resize: vertical;
+            min-height: 80px;
+            margin-bottom: 10px;
+        }
+        
+        .comment-list {
+            margin-top: 20px;
+        }
+        
+        .comment-item {
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #6c757d;
+            font-size: 0.85rem;
+        }
+        
+        .comment-author {
+            font-weight: bold;
+            color: #1e90ff;
+        }
+        
+        .comment-date {
+            font-style: italic;
+        }
+        
+        .comment-content {
+            line-height: 1.5;
+        }
+        
+        .no-comments {
+            color: #6c757d;
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .comment-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .comment-like, .comment-reply {
+            background: none;
+            border: none;
+            color: #6c757d;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+            padding: 0;
+        }
+        
+        .comment-like:hover, .comment-reply:hover {
+            color: #1e90ff;
+        }
+        
+        .like-count {
+            margin-left: 5px;
+        }
+        
+        .comment-liked {
+            color: #1e90ff;
+        }
+        
+        /* 药物信息区域样式 */
+        .medication-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .medication-tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+        
+        .medication-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-weight: bold;
+            color: #777;
+            white-space: nowrap;
+        }
+        
+        .medication-tab.active {
+            color: #1e90ff;
+            border-bottom: 2px solid #1e90ff;
+        }
+        
+        .medication-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .medication-item {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            transition: transform 0.2s;
+        }
+        
+        .medication-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .medication-name {
+            font-weight: bold;
+            color: #1e90ff;
+            margin-bottom: 5px;
+        }
+        
+        .medication-description {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .medication-warning {
+            font-size: 0.8rem;
+            color: #dc3545;
+            margin-top: 5px;
+        }
+        
+        .medication-suitable {
+            font-size: 0.8rem;
+            color: #28a745;
+        }
+        
+        .medication-details {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #eee;
+        }
+        
+        .medication-note {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        /* 连连看游戏样式 */
+        .memory-game {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .memory-game h2 {
+            color: #1e90ff;
+            margin-bottom: 15px;
+        }
+
+        .memory-game-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .memory-card {
+            height: 100px;
+            background-color: #f0f8ff;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: transform 0.5s;
+            position: relative;
+        }
+
+        .memory-card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .memory-card-front,
+        .memory-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+        }
+
+        .memory-card-front {
+            background-color: #1e90ff;
+            color: white;
+        }
+
+        .memory-card-back {
+            background-color: white;
+            transform: rotateY(180deg);
+            border: 2px solid #1e90ff;
+        }
+
+        .memory-card.matched {
+            background-color: #28a745;
+            color: white;
+            cursor: default;
+        }
+
+        .memory-game-controls {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .memory-game-stats {
+            display: flex;
+            gap: 20px;
+        }
+
+        .memory-game-stats span {
+            font-weight: bold;
+            color: #1e90ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="lang-zh">感冒预防卫士</h1>
+            <h1 class="lang-en">Cold Prevention Guardian</h1>
+            <p class="lang-zh">您的个人健康助手</p>
+            <p class="lang-en">Your Personal Health Assistant</p>
+            
+            <div class="language-selector">
+                <a href="profile.html" class="profile-btn lang-zh">个人信息</a>
+                <a href="profile.html" class="profile-btn lang-en">Profile</a>
+                <button type="button" id="zh-btn" class="language-btn active" onclick="setLanguage('zh-CN')">中文</button>
+                <button type="button" id="en-btn" class="language-btn" onclick="setLanguage('en')">English</button>
+            </div>
+        </header>
+
+        <div class="temp-chart">
+            <h2 class="lang-zh">体温记录（近7天）</h2>
+            <h2 class="lang-en">Temperature Record (Last 7 Days)</h2>
+            
+            <!-- 替换占位符为实际图表容器 -->
+            <div class="temp-chart-container">
+                <canvas id="temperatureChart"></canvas>
+            </div>
+            
+            <!-- 体温记录表单 -->
+            <div class="temp-form">
+                <form id="temperature-form">
+                    <div class="form-row">
+                        <label for="temp-date" class="lang-zh">日期:</label>
+                        <label for="temp-date" class="lang-en">Date:</label>
+                        <input type="date" id="temp-date" required
+                            oninvalid="this.setCustomValidity(document.documentElement.lang === 'zh-CN' ? '请选择日期' : 'Please select a date')"
+                            oninput="this.setCustomValidity('')"
+                            lang="en">
+                    </div>
+                    <div class="form-row">
+                        <label for="temp-value" class="lang-zh">体温:</label>
+                        <label for="temp-value" class="lang-en">Temp:</label>
+                        <input type="number" id="temp-value" step="0.1" min="35" max="42" required
+                            oninvalid="this.setCustomValidity(document.documentElement.lang === 'zh-CN' ? '请输入35-42度之间的体温' : 'Please enter a temperature between 35-42°C')"
+                            oninput="this.setCustomValidity('')">
+                        <span class="lang-zh">°C</span>
+                        <span class="lang-en">°C</span>
+                    </div>
+                    <div class="form-row">
+                        <button type="submit" class="lang-zh">记录体温</button>
+                        <button type="submit" class="lang-en">Record Temperature</button>
+                    </div>
+                </form>
+                <div id="login-required" class="login-required" style="display: none;">
+                    <p class="lang-zh">请先登录以记录体温</p>
+                    <p class="lang-en">Please log in to record temperature</p>
+                    <a href="profile.html" class="lang-zh">去登录</a>
+                    <a href="profile.html" class="lang-en">Go to Login</a>
+                </div>
+            </div>
+            
+            <!-- 体温记录列表 -->
+            <div class="temp-records">
+                <h3 class="lang-zh">最近记录</h3>
+                <h3 class="lang-en">Recent Records</h3>
+                <div id="temp-records-list"></div>
+            </div>
+        </div>
+
+        <div class="health-advice">
+            <h2 class="lang-zh">健康建议</h2>
+            <h2 class="lang-en">Health Advice</h2>
+            
+            <div id="health-advice-content">
+                <!-- 健康建议内容将动态加载 -->
+            </div>
+        </div>
+
+        <!-- 药物信息区域 -->
+        <div class="medication-section">
+            <h2 class="lang-zh">药物信息</h2>
+            <h2 class="lang-en">Medication Information</h2>
+            
+            <div class="medication-tabs">
+                <button type="button" class="medication-tab active lang-zh" onclick="switchMedicationTab('recommended')">推荐药物</button>
+                <button type="button" class="medication-tab lang-zh" onclick="switchMedicationTab('fever')">退烧药</button>
+                <button type="button" class="medication-tab lang-zh" onclick="switchMedicationTab('cold')">感冒药</button>
+                <button type="button" class="medication-tab lang-zh" onclick="switchMedicationTab('cough')">止咳药</button>
+                <button type="button" class="medication-tab lang-zh" onclick="switchMedicationTab('all')">所有药物</button>
+                
+                <button type="button" class="medication-tab active lang-en" onclick="switchMedicationTab('recommended')">Recommended</button>
+                <button type="button" class="medication-tab lang-en" onclick="switchMedicationTab('fever')">Fever Reducers</button>
+                <button type="button" class="medication-tab lang-en" onclick="switchMedicationTab('cold')">Cold Medicine</button>
+                <button type="button" class="medication-tab lang-en" onclick="switchMedicationTab('cough')">Cough Medicine</button>
+                <button type="button" class="medication-tab lang-en" onclick="switchMedicationTab('all')">All Medications</button>
+            </div>
+            
+            <div id="medication-recommendation" class="medication-note">
+                <!-- 这里将显示基于体温的药物推荐 -->
+            </div>
+            
+            <div id="medication-list" class="medication-list">
+                <!-- 药物列表将由JS动态生成 -->
+            </div>
+        </div>
+        
+        <!-- 评论部分 -->
+        <div class="comments-section">
+            <h2 class="lang-zh">用户评论</h2>
+            <h2 class="lang-en">User Comments</h2>
+            
+            <!-- 评论表单 -->
+            <div class="comment-form">
+                <form id="comment-form">
+                    <div class="form-group">
+                        <label for="comment-content" class="lang-zh">发表评论：</label>
+                        <label for="comment-content" class="lang-en">Post a comment:</label>
+                        <textarea id="comment-content" required></textarea>
+                    </div>
+                    <div id="comment-error" class="error-message">
+                        <span class="lang-zh">请先登录后再发表评论</span>
+                        <span class="lang-en">Please log in before posting a comment</span>
+                    </div>
+                    <button type="submit" class="lang-zh">发表评论</button>
+                    <button type="submit" class="lang-en">Post Comment</button>
+                </form>
+            </div>
+            
+            <!-- 评论列表 -->
+            <div class="comment-list">
+                <h3 class="lang-zh">所有评论</h3>
+                <h3 class="lang-en">All Comments</h3>
+                <div id="comments-container"></div>
+            </div>
+        </div>
+
+        <!-- 连连看游戏区域 -->
+        <div class="memory-game">
+            <h2 class="lang-zh">连连看游戏</h2>
+            <h2 class="lang-en">Memory Game</h2>
+            <div class="memory-game-container" id="memory-game-container"></div>
+            <div class="memory-game-controls">
+                <div class="memory-game-stats">
+                    <span class="lang-zh">时间: <span id="game-time">0</span>秒</span>
+                    <span class="lang-en">Time: <span id="game-time">0</span>s</span>
+                    <span class="lang-zh">步数: <span id="game-moves">0</span></span>
+                    <span class="lang-en">Moves: <span id="game-moves">0</span></span>
+                </div>
+                <button onclick="startNewGame()" class="lang-zh">新游戏</button>
+                <button onclick="startNewGame()" class="lang-en">New Game</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 更新输入框占位符
+        function updatePlaceholders() {
+            if (document.documentElement.lang === 'zh-CN') {
+                document.getElementById('login-username').placeholder = '请输入用户名';
+                document.getElementById('login-password').placeholder = '请输入密码';
+                document.getElementById('register-username').placeholder = '请输入用户名';
+                document.getElementById('register-email').placeholder = '请输入电子邮箱';
+                document.getElementById('register-password').placeholder = '请输入密码';
+                document.getElementById('register-confirm-password').placeholder = '请再次输入密码';
+                document.getElementById('temp-date').placeholder = '请选择日期';
+            } else {
+                document.getElementById('login-username').placeholder = 'Enter your username';
+                document.getElementById('login-password').placeholder = 'Enter your password';
+                document.getElementById('register-username').placeholder = 'Enter your username';
+                document.getElementById('register-email').placeholder = 'Enter your email';
+                document.getElementById('register-password').placeholder = 'Enter your password';
+                document.getElementById('register-confirm-password').placeholder = 'Confirm your password';
+                document.getElementById('temp-date').placeholder = 'Select date';
+            }
+        }
+        
+        // 设置语言
+        function setLanguage(lang) {
+            // 设置html标签的lang属性
+            document.documentElement.lang = lang;
+            
+            // 更新localStorage
+            localStorage.setItem('language', lang);
+            
+            // 更新日期输入框的语言
+            document.getElementById('temp-date').lang = lang === 'zh-CN' ? 'zh' : 'en';
+            
+            // 更新按钮状态
+            if (lang === 'zh-CN') {
+                document.getElementById('zh-btn').classList.add('active');
+                document.getElementById('en-btn').classList.remove('active');
+            } else {
+                document.getElementById('zh-btn').classList.remove('active');
+                document.getElementById('en-btn').classList.add('active');
+            }
+            
+            // 更新所有语言相关元素
+            toggleLanguageElements();
+            
+            // 更新其他需要根据语言变化的内容
+            updatePlaceholders();
+            
+            // 获取当前用户信息
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            
+            // 更新用户状态相关显示
+            checkUserStatus();
+            
+            // 更新年龄组显示
+            updateAgeGroupDisplay();
+            
+            // 如果用户已登录，更新所有动态内容
+            if (currentUser) {
+                // 更新用户名显示
+                document.getElementById('username-display').textContent = currentUser.username;
+                document.getElementById('username-display-en').textContent = currentUser.username;
+                
+                // 更新体温记录显示
+                if (currentUser.temperatureRecords) {
+                    displayTemperatureRecords();
+                }
+                
+                // 更新图表
+                if (currentUser.temperatureRecords) {
+                    createTemperatureChart(currentUser.temperatureRecords);
+                }
+            }
+            
+            // 更新健康建议
+            updateHealthAdvice();
+            
+            // 更新药物信息
+            updateMedicationRecommendation();
+            
+            // 获取当前活动的药物选项卡
+            const activeTab = document.querySelector('.medication-tab.active');
+            if (activeTab) {
+                const category = activeTab.onclick.toString().match(/switchMedicationTab\('(.+?)'\)/)[1];
+                loadMedicationList(category);
+            } else {
+                loadMedicationList('recommended');
+            }
+            
+            // 更新评论区域
+            displayComments();
+            
+            // 更新登录/注册表单
+            updateAuthForms();
+            
+            // 更新日期输入框的显示格式
+            const tempDateInput = document.getElementById('temp-date');
+            if (tempDateInput.value) {
+                const date = new Date(tempDateInput.value);
+                tempDateInput.value = date.toISOString().split('T')[0];
+            }
+        }
+        
+        // 添加新函数：更新年龄组显示
+        function updateAgeGroupDisplay() {
+            const savedAgeGroup = localStorage.getItem('userAgeGroup');
+            if (savedAgeGroup) {
+                const buttons = document.querySelectorAll('.age-toggle button');
+                buttons.forEach(button => {
+                    if (document.documentElement.lang === 'zh-CN') {
+                        if (button.textContent === '成年人' && (savedAgeGroup === '成年人' || savedAgeGroup === 'Adults')) {
+                            button.classList.add('active');
+                        } else if (button.textContent === '老年人' && (savedAgeGroup === '老年人' || savedAgeGroup === 'Seniors')) {
+                            button.classList.add('active');
+                        } else if (button.textContent === '青少年' && (savedAgeGroup === '青少年' || savedAgeGroup === 'Teenagers')) {
+                            button.classList.add('active');
+                        } else if (button.textContent === '儿童' && (savedAgeGroup === '儿童' || savedAgeGroup === 'Children')) {
+                            button.classList.add('active');
+                        } else {
+                            button.classList.remove('active');
+                        }
+                    } else {
+                        if (button.textContent === 'Adults' && (savedAgeGroup === '成年人' || savedAgeGroup === 'Adults')) {
+                            button.classList.add('active');
+                        } else if (button.textContent === 'Seniors' && (savedAgeGroup === '老年人' || savedAgeGroup === 'Seniors')) {
+                            button.classList.add('active');
+                        } else if (button.textContent === 'Teenagers' && (savedAgeGroup === '青少年' || savedAgeGroup === 'Teenagers')) {
+                            button.classList.add('active');
+                        } else if (button.textContent === 'Children' && (savedAgeGroup === '儿童' || savedAgeGroup === 'Children')) {
+                            button.classList.add('active');
+                        } else {
+                            button.classList.remove('active');
+                        }
+                    }
+                });
+            }
+        }
+        
+        // 切换语言
+        function switchLanguage(lang) {
+            document.documentElement.lang = lang;
+            updateLanguageButtons();
+        }
+        
+        // 更新语言按钮状态
+        function updateLanguageButtons() {
+            const lang = document.documentElement.lang;
+            if (lang === 'zh-CN') {
+                document.getElementById('zh-btn').classList.add('active');
+                document.getElementById('en-btn').classList.remove('active');
+                localStorage.setItem('language', 'zh-CN');
+            } else {
+                document.getElementById('zh-btn').classList.remove('active');
+                document.getElementById('en-btn').classList.add('active');
+                localStorage.setItem('language', 'en');
+            }
+            
+            // 更新所有需要根据语言变化的内容
+            updatePlaceholders();
+            toggleLanguageElements();
+            
+            // 更新图表
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (currentUser && currentUser.temperatureRecords) {
+                createTemperatureChart(currentUser.temperatureRecords);
+            }
+            
+            // 更新健康建议
+            updateHealthAdvice();
+            
+            // 更新药物信息
+            updateMedicationRecommendation();
+            loadMedicationList('fever');
+            
+            // 更新评论
+            displayComments();
+        }
+        
+        // 设置按钮激活状态
+        function setActiveButton(button) {
+            // 获取同级按钮
+            const siblings = button.parentElement.querySelectorAll('button');
+            siblings.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            
+            // 保存年龄组选择到localStorage
+            const ageGroup = button.textContent;
+            localStorage.setItem('userAgeGroup', ageGroup);
+            
+            // 设置字体大小
+            if (ageGroup === '老年人' || ageGroup === 'Seniors') {
+                setFontSize('large');
+            } else {
+                setFontSize('normal');
+            }
+            
+            // 同步另一个语言的按钮状态
+            const isZh = document.documentElement.lang === 'zh-CN';
+            const otherLangButtons = document.querySelectorAll(`.age-toggle .lang-${isZh ? 'en' : 'zh'} button`);
+            const currentIndex = Array.from(siblings).indexOf(button);
+            otherLangButtons[currentIndex].classList.add('active');
+        }
+        
+        // 设置字体大小
+        function setFontSize(size) {
+            if (size === 'large') {
+                document.body.style.fontSize = '1.2rem';
+            } else {
+                document.body.style.fontSize = '1rem';
+            }
+        }
+        
+        // 切换登录/注册选项卡
+        function switchTab(tab) {
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const tabs = document.querySelectorAll('.auth-tab');
+            
+            // 重置错误和成功消息
+            document.getElementById('login-error').style.display = 'none';
+            document.getElementById('register-error').style.display = 'none';
+            document.getElementById('register-success').style.display = 'none';
+            
+            // 切换表单显示
+            if (tab === 'login') {
+                loginForm.classList.add('active');
+                registerForm.classList.remove('active');
+            } else {
+                loginForm.classList.remove('active');
+                registerForm.classList.add('active');
+            }
+            
+            // 更新选项卡状态
+            tabs.forEach(t => {
+                if ((t.textContent === '登录' || t.textContent === 'Login') && tab === 'login') {
+                    t.classList.add('active');
+                } else if ((t.textContent === '注册' || t.textContent === 'Register') && tab === 'register') {
+                    t.classList.add('active');
+                } else {
+                    t.classList.remove('active');
+                }
+            });
+        }
+        
+        // 处理登录表单提交
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            
+            // 从localStorage获取用户数据
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const user = users.find(u => u.username === username && u.password === password);
+            
+            if (user) {
+                // 登录成功，存储当前用户
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                
+                // 更新UI显示
+                document.getElementById('username-display').textContent = user.username;
+                document.getElementById('username-display-en').textContent = user.username;
+                
+                // 显示用户资料，隐藏登录表单
+                document.getElementById('user-profile').style.display = 'block';
+                document.getElementById('auth-forms').style.display = 'none';
+                
+                // 显示个人内容区域
+                const personalSections = document.querySelectorAll('.temp-chart, .health-advice, .medication-section');
+                personalSections.forEach(section => {
+                    section.style.display = 'block';
+                });
+                
+                // 显示评论区域
+                document.querySelector('.comments-section').style.display = 'block';
+                
+                // 重置表单
+                document.getElementById('login-form').reset();
+                
+                // 更新显示当前用户的个人数据
+                displayTemperatureRecords();
+                updateHealthAdvice();
+                updateMedicationRecommendation();
+            } else {
+                // 登录失败，显示错误信息
+                document.getElementById('login-error').style.display = 'block';
+            }
+            
+            return false;
+        }
+        
+        // 处理注册表单提交
+        function handleRegister(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('register-username').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('register-confirm-password').value;
+            
+            // 验证密码是否匹配
+            if (password !== confirmPassword) {
+                document.getElementById('register-error').style.display = 'block';
+                return false;
+            }
+            
+            // 获取现有用户
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            
+            // 检查用户名是否已存在
+            if (users.some(u => u.username === username)) {
+                document.getElementById('register-error').textContent = document.documentElement.lang === 'zh-CN' ? 
+                    '用户名已存在' : 'Username already exists';
+                document.getElementById('register-error').style.display = 'block';
+                return false;
+            }
+            
+            // 添加新用户
+            users.push({
+                username,
+                email,
+                password,
+                registeredAt: new Date().toISOString()
+            });
+            
+            // 保存到localStorage
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            // 显示成功消息
+            document.getElementById('register-success').style.display = 'block';
+            document.getElementById('register-error').style.display = 'none';
+            
+            // 重置表单
+            document.getElementById('register-form').reset();
+            
+            // 3秒后切换到登录选项卡
+            setTimeout(() => {
+                switchTab('login');
+            }, 3000);
+            
+            return false;
+        }
+        
+        // 登出功能
+        function logout() {
+            // 清除当前用户信息
+            localStorage.removeItem('currentUser');
+            
+            // 更新UI显示
+            document.getElementById('user-profile').style.display = 'none';
+            document.getElementById('auth-forms').style.display = 'block';
+            
+            // 隐藏内容区域（包括评论）
+            const personalSections = document.querySelectorAll('.temp-chart, .health-advice, .medication-section');
+            const commentsSection = document.querySelector('.comments-section');
+            
+            personalSections.forEach(section => {
+                section.style.display = 'none';
+            });
+            commentsSection.style.display = 'none';
+            
+            // 重置表单
+            document.getElementById('login-form').reset();
+            document.getElementById('register-form').reset();
+            
+            // 切换到登录选项卡
+            switchTab('login');
+            
+            // 更新健康建议
+            updateHealthAdvice();
+        }
+        
+        // 检查用户是否已登录
+        function checkLoggedInUser() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const personalSections = document.querySelectorAll('.temp-chart, .health-advice, .medication-section');
+            const commentsSection = document.querySelector('.comments-section');
+            
+            if (currentUser) {
+                // 已登录，显示用户资料
+                document.getElementById('username-display').textContent = currentUser.username;
+                document.getElementById('username-display-en').textContent = currentUser.username;
+                document.getElementById('user-profile').style.display = 'block';
+                document.getElementById('auth-forms').style.display = 'none';
+                
+                // 显示个人内容区域
+                personalSections.forEach(section => {
+                    section.style.display = 'block';
+                });
+                
+                // 显示评论区域
+                commentsSection.style.display = 'block';
+            } else {
+                // 未登录，显示登录表单
+                document.getElementById('user-profile').style.display = 'none';
+                document.getElementById('auth-forms').style.display = 'block';
+                
+                // 隐藏所有内容区域（包括评论）
+                personalSections.forEach(section => {
+                    section.style.display = 'none';
+                });
+                commentsSection.style.display = 'none';
+            }
+            
+            // 更新健康建议
+            updateHealthAdvice();
+        }
+        
+        // 处理体温记录表单提交
+        function handleTemperatureSubmit(event) {
+            event.preventDefault();
+            
+            const date = document.getElementById('temp-date').value;
+            const temperature = parseFloat(document.getElementById('temp-value').value);
+            
+            // 验证日期是否在过去7天内
+            const currentDate = new Date();
+            const selectedDate = new Date(date);
+            const daysDiff = Math.floor((currentDate - selectedDate) / (1000 * 60 * 60 * 24));
+            
+            if (daysDiff < 0 || daysDiff > 6) {
+                alert(document.documentElement.lang === 'zh-CN' ? 
+                    '请选择过去7天内的日期' : 
+                    'Please select a date within the last 7 days');
+                return false;
+            }
+            
+            // 获取当前用户
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            
+            if (!currentUser) {
+                alert(document.documentElement.lang === 'zh-CN' ? 
+                    '请先登录' : 
+                    'Please login first');
+                return false;
+            }
+            
+            // 获取用户的体温记录
+            let users = JSON.parse(localStorage.getItem('users') || '[]');
+            const userIndex = users.findIndex(u => u.username === currentUser.username);
+            
+            if (userIndex === -1) {
+                return false;
+            }
+            
+            // 初始化体温记录数组（如果不存在）
+            if (!users[userIndex].temperatureRecords) {
+                users[userIndex].temperatureRecords = [];
+            }
+            
+            // 检查是否已经有同一天的记录
+            const existingRecordIndex = users[userIndex].temperatureRecords.findIndex(
+                record => record.date === date
+            );
+            
+            // 如果存在，更新记录；否则，添加新记录
+            if (existingRecordIndex !== -1) {
+                users[userIndex].temperatureRecords[existingRecordIndex].temperature = temperature;
+            } else {
+                // 添加新记录，保证只保留最近7天的记录
+                users[userIndex].temperatureRecords.push({
+                    date: date,
+                    temperature: temperature
+                });
+                
+                // 按日期排序
+                users[userIndex].temperatureRecords.sort((a, b) => 
+                    new Date(b.date) - new Date(a.date)
+                );
+                
+                // 只保留最近7条记录
+                if (users[userIndex].temperatureRecords.length > 7) {
+                    users[userIndex].temperatureRecords = users[userIndex].temperatureRecords.slice(0, 7);
+                }
+            }
+            
+            // 更新 localStorage
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            // 更新当前用户信息
+            currentUser.temperatureRecords = users[userIndex].temperatureRecords;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            // 更新显示
+            displayTemperatureRecords();
+            
+            // 更新健康建议
+            updateHealthAdvice();
+            
+            // 更新药物推荐信息
+            updateMedicationRecommendation();
+            
+            // 重置表单
+            document.getElementById('temperature-form').reset();
+            
+            // 显示成功消息
+            const successMessage = document.documentElement.lang === 'zh-CN' ? 
+                '体温记录已保存' : 'Temperature record saved';
+            alert(successMessage);
+            
+            return false;
+        }
+        
+        // 显示温度记录
+        function displayTemperatureRecords() {
+            const recordsList = document.getElementById('temp-records-list');
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            
+            if (!currentUser || !currentUser.temperatureRecords || currentUser.temperatureRecords.length === 0) {
+                recordsList.innerHTML = `<p class="lang-${document.documentElement.lang === 'zh-CN' ? 'zh' : 'en'}">
+                    ${document.documentElement.lang === 'zh-CN' ? '暂无记录' : 'No records yet'}</p>`;
+                
+                // 清除现有图表（如果存在）
+                if (window.temperatureChartInstance) {
+                    window.temperatureChartInstance.destroy();
+                    window.temperatureChartInstance = null;
+                }
+                
+                return;
+            }
+            
+            // 显示记录
+            let recordsHTML = '';
+            
+            currentUser.temperatureRecords.forEach(record => {
+                // 格式化日期显示
+                const recordDate = new Date(record.date);
+                const formattedDate = recordDate.toLocaleDateString(
+                    document.documentElement.lang === 'zh-CN' ? 'zh-CN' : 'en-US',
+                    { month: 'short', day: 'numeric' }
+                );
+                
+                // 判断是否发烧
+                const isFever = record.temperature >= 37.5;
+                const tempClass = isFever ? 'temp-record-value fever' : 'temp-record-value';
+                const feverStatus = isFever ? 
+                    (document.documentElement.lang === 'zh-CN' ? '（发烧）' : '(Fever)') : 
+                    '';
+                
+                recordsHTML += `
+                    <div class="temp-record-item">
+                        <span class="temp-record-date">${formattedDate}</span>
+                        <span class="${tempClass}">${record.temperature} °C ${feverStatus}</span>
+                    </div>
+                `;
+            });
+            
+            recordsList.innerHTML = recordsHTML;
+            
+            // 更新当前用户的图表
+            createTemperatureChart(currentUser.temperatureRecords);
+        }
+        
+        // 更新体温图表占位符（这里实际应该绘制图表，但为简化我们只更新文本）
+        function updateTemperatureChartPlaceholder(records) {
+            if (!records || records.length === 0) return;
+            
+            // 不再需要占位符文本更新，而是使用图表
+            createTemperatureChart(records);
+        }
+        
+        // 创建体温图表
+        function createTemperatureChart(records) {
+            if (!records || records.length === 0) return;
+            
+            // 准备数据
+            const sortedRecords = [...records].sort((a, b) => new Date(a.date) - new Date(b.date));
+            const labels = sortedRecords.map(record => {
+                const date = new Date(record.date);
+                return date.toLocaleDateString(
+                    document.documentElement.lang === 'zh-CN' ? 'zh-CN' : 'en-US', 
+                    { month: 'short', day: 'numeric' }
+                );
+            });
+            const temperatures = sortedRecords.map(record => record.temperature);
+            
+            // 获取画布和上下文
+            const canvas = document.getElementById('temperatureChart');
+            
+            // 销毁现有图表（如果存在）
+            if (window.temperatureChartInstance) {
+                window.temperatureChartInstance.destroy();
+            }
+            
+            // 创建新图表
+            window.temperatureChartInstance = new Chart(canvas, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: document.documentElement.lang === 'zh-CN' ? '体温 (°C)' : 'Temperature (°C)',
+                        data: temperatures,
+                        fill: false,
+                        borderColor: '#1e90ff',
+                        backgroundColor: '#1e90ff',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        pointBackgroundColor: temperatures.map(temp => temp >= 37.5 ? '#ff4500' : '#1e90ff'),
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: Math.min(...temperatures) - 0.5 < 35 ? 35 : Math.min(...temperatures) - 0.5,
+                            max: Math.max(...temperatures) + 0.5 > 42 ? 42 : Math.max(...temperatures) + 0.5,
+                            ticks: {
+                                stepSize: 0.5
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                afterLabel: function(context) {
+                                    const temp = context.parsed.y;
+                                    if (temp >= 37.5) {
+                                        return document.documentElement.lang === 'zh-CN' ? 
+                                            '发烧状态' : 'Fever state';
+                                    }
+                                    return document.documentElement.lang === 'zh-CN' ? 
+                                        '正常体温' : 'Normal temperature';
+                                }
+                            }
+                        },
+                        legend: {
+                            display: false
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
+                }
+            });
+            
+            // 添加正常体温和发烧温度的横线标记
+            const normalTemp = {
+                id: 'normalTemp',
+                beforeDatasetsDraw(chart) {
+                    const {ctx, chartArea: {top, bottom, left, right}, scales: {y}} = chart;
+                    
+                    // 绘制正常体温上限线 (37.5°C)
+                    const feverY = y.getPixelForValue(37.5);
+                    
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.moveTo(left, feverY);
+                    ctx.lineTo(right, feverY);
+                    ctx.lineWidth = 1;
+                    ctx.strokeStyle = '#ff4500';
+                    ctx.setLineDash([5, 5]);
+                    ctx.stroke();
+                    ctx.restore();
+                    
+                    // 添加文字标记
+                    ctx.save();
+                    ctx.fillStyle = '#ff4500';
+                    ctx.font = '12px Arial';
+                    ctx.fillText(
+                        document.documentElement.lang === 'zh-CN' ? '发烧线 (37.5°C)' : 'Fever line (37.5°C)',
+                        right - 120, feverY - 5
+                    );
+                    ctx.restore();
+                }
+            };
+            
+            // 应用插件
+            window.temperatureChartInstance.options.plugins.normalTemp = normalTemp;
+            Chart.register(normalTemp);
+            window.temperatureChartInstance.update();
+        }
+        
+        // 根据体温记录生成健康建议
+        function generateHealthAdvice(records) {
+            if (!records || records.length === 0) {
+                // 没有体温记录时显示默认建议
+                return {
+                    status: 'default',
+                    advice: document.documentElement.lang === 'zh-CN' ? 
+                        '请记录您的体温，我们将为您提供个性化健康建议。' :
+                        'Please record your temperature, and we will provide personalized health advice.'
+                };
+            }
+            
+            // 计算最近记录的体温趋势和状态
+            const sortedRecords = [...records].sort((a, b) => new Date(b.date) - new Date(a.date));
+            const latestTemp = sortedRecords[0].temperature;
+            
+            // 查找最高体温
+            const highestTemp = Math.max(...sortedRecords.map(record => record.temperature));
+            
+            // 判断是否有发烧记录
+            const hasFever = sortedRecords.some(record => record.temperature >= 37.5);
+            
+            // 判断体温趋势（如果有多个记录）
+            let trend = 'stable';
+            if (sortedRecords.length > 1) {
+                const secondLatest = sortedRecords[1].temperature;
+                const diff = latestTemp - secondLatest;
+                
+                if (diff > 0.3) trend = 'rising';
+                else if (diff < -0.3) trend = 'falling';
+            }
+            
+            // 根据体温状态和趋势生成建议
+            if (latestTemp >= 38.5) {
+                // 高烧状态
+                return {
+                    status: 'high_fever',
+                    advice: document.documentElement.lang === 'zh-CN' ?
+                        `您当前体温为${latestTemp}°C，属于高烧状态，建议：<ul>
+                            <li>立即就医，可能需要专业医疗干预</li>
+                            <li>多喝温水，保持身体水分</li>
+                            <li>使用物理降温方法，如温水擦拭</li>
+                            <li>根据医嘱服用退烧药</li>
+                            <li>充分休息，避免剧烈活动</li>
+                        </ul>` :
+                        `Your current temperature is ${latestTemp}°C, which is a high fever. Recommendations:<ul>
+                            <li>Seek medical attention immediately as professional intervention may be required</li>
+                            <li>Drink plenty of warm water to stay hydrated</li>
+                            <li>Use physical cooling methods such as lukewarm sponging</li>
+                            <li>Take fever reducers as prescribed by a doctor</li>
+                            <li>Rest adequately and avoid strenuous activities</li>
+                        </ul>`
+                };
+            } else if (latestTemp >= 37.5 && latestTemp < 38.5) {
+                // 低烧状态
+                const additional = trend === 'rising' ? 
+                    (document.documentElement.lang === 'zh-CN' ? '您的体温有上升趋势，请密切关注' : 'Your temperature is trending upward, please monitor closely') :
+                    (trend === 'falling' ? 
+                        (document.documentElement.lang === 'zh-CN' ? '您的体温有下降趋势，但仍需注意' : 'Your temperature is trending downward, but still needs attention') :
+                        '');
+                        
+                return {
+                    status: 'low_fever',
+                    advice: document.documentElement.lang === 'zh-CN' ?
+                        `您当前体温为${latestTemp}°C，属于低烧状态。${additional}<ul>
+                            <li>多休息，避免过度劳累</li>
+                            <li>保持充足的水分摄入</li>
+                            <li>监测体温变化，每4小时测量一次</li>
+                            <li>如果体温持续升高或超过38.5°C，请就医</li>
+                            <li>可以考虑适量服用退烧药，但请先咨询医生</li>
+                        </ul>` :
+                        `Your current temperature is ${latestTemp}°C, which is a mild fever. ${additional}<ul>
+                            <li>Get plenty of rest and avoid overexertion</li>
+                            <li>Maintain adequate fluid intake</li>
+                            <li>Monitor temperature changes, measure every 4 hours</li>
+                            <li>If temperature continues to rise or exceeds 38.5°C, please see a doctor</li>
+                            <li>Consider taking a moderate dose of fever reducers, but consult with a doctor first</li>
+                        </ul>`
+                };
+            } else if (latestTemp >= 37.0 && latestTemp < 37.5) {
+                // 体温偏高但未达到发烧标准
+                return {
+                    status: 'elevated',
+                    advice: document.documentElement.lang === 'zh-CN' ?
+                        `您当前体温为${latestTemp}°C，体温略高但未达到发烧标准。建议：<ul>
+                            <li>适当休息，减少剧烈活动</li>
+                            <li>保持室内空气流通</li>
+                            <li>多喝水，增加水分摄入</li>
+                            <li>继续监测体温变化</li>
+                            <li>增强免疫力，保持规律作息</li>
+                        </ul>` :
+                        `Your current temperature is ${latestTemp}°C, slightly elevated but not reaching fever standard. Recommendations:<ul>
+                            <li>Get adequate rest and reduce strenuous activities</li>
+                            <li>Maintain good ventilation indoors</li>
+                            <li>Drink more water to increase fluid intake</li>
+                            <li>Continue monitoring temperature changes</li>
+                            <li>Boost immunity by maintaining a regular sleep schedule</li>
+                        </ul>`
+                };
+            } else {
+                // 正常体温
+                let historyAdvice = '';
+                if (hasFever) {
+                    historyAdvice = document.documentElement.lang === 'zh-CN' ?
+                        `您过去曾有发烧记录（最高${highestTemp}°C），请继续保持良好习惯。` :
+                        `You have had fever records in the past (highest ${highestTemp}°C), please continue to maintain good habits.`;
+                }
+                
+                return {
+                    status: 'normal',
+                    advice: document.documentElement.lang === 'zh-CN' ?
+                        `您当前体温为${latestTemp}°C，体温正常。${historyAdvice}<ul>
+                            <li>保持良好的个人卫生习惯，勤洗手</li>
+                            <li>均衡饮食，保证充足睡眠</li>
+                            <li>适量运动，增强体质</li>
+                            <li>避免接触感冒患者，减少交叉感染</li>
+                            <li>室内常通风，保持空气流通</li>
+                        </ul>` :
+                        `Your current temperature is ${latestTemp}°C, which is normal. ${historyAdvice}<ul>
+                            <li>Maintain good personal hygiene habits and wash hands frequently</li>
+                            <li>Eat a balanced diet and ensure adequate sleep</li>
+                            <li>Exercise moderately to strengthen physical fitness</li>
+                            <li>Avoid contact with people who have colds to reduce cross-infection</li>
+                            <li>Ventilate indoor spaces regularly to maintain air circulation</li>
+                        </ul>`
+                };
+            }
+        }
+        
+        // 更新健康建议显示
+        function updateHealthAdvice() {
+            const adviceContent = document.getElementById('health-advice-content');
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            
+            let advice;
+            if (!currentUser || !currentUser.temperatureRecords || currentUser.temperatureRecords.length === 0) {
+                // 没有登录或没有记录时的默认建议
+                advice = generateHealthAdvice(null);
+            } else {
+                // 根据体温记录生成建议
+                advice = generateHealthAdvice(currentUser.temperatureRecords);
+            }
+            
+            // 设置健康建议颜色
+            let statusClass = '';
+            switch (advice.status) {
+                case 'high_fever':
+                    statusClass = 'text-danger';
+                    break;
+                case 'low_fever':
+                    statusClass = 'text-warning';
+                    break;
+                case 'elevated':
+                    statusClass = 'text-info';
+                    break;
+                case 'normal':
+                    statusClass = 'text-success';
+                    break;
+                default:
+                    statusClass = '';
+            }
+            
+            // 更新健康建议内容
+            adviceContent.innerHTML = `
+                <p class="${statusClass}">${advice.advice}</p>
+            `;
+            
+            // 添加状态相关的 CSS 样式
+            if (!document.getElementById('status-styles')) {
+                const styleElement = document.createElement('style');
+                styleElement.id = 'status-styles';
+                styleElement.textContent = `
+                    .text-danger { color: #dc3545; }
+                    .text-warning { color: #ffc107; }
+                    .text-info { color: #17a2b8; }
+                    .text-success { color: #28a745; }
+                `;
+                document.head.appendChild(styleElement);
+            }
+        }
+        
+        // 处理评论表单提交
+        function handleCommentSubmit(event) {
+            event.preventDefault();
+            
+            // 获取当前用户
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            
+            // 检查用户是否登录
+            if (!currentUser) {
+                document.getElementById('comment-error').style.display = 'block';
+                return false;
+            }
+            
+            // 获取评论内容
+            const commentContent = document.getElementById('comment-content').value.trim();
+            
+            if (!commentContent) {
+                const errorMessage = document.documentElement.lang === 'zh-CN' ? 
+                    '评论内容不能为空' : 'Comment content cannot be empty';
+                alert(errorMessage);
+                return false;
+            }
+            
+            // 创建新评论
+            const newComment = {
+                id: Date.now().toString(), // 使用时间戳作为唯一ID
+                author: currentUser.username,
+                content: commentContent,
+                date: new Date().toISOString(),
+                likes: 0,
+                likedBy: []
+            };
+            
+            // 从localStorage获取现有评论
+            let comments = JSON.parse(localStorage.getItem('comments') || '[]');
+            
+            // 添加新评论
+            comments.push(newComment);
+            
+            // 保存到localStorage
+            localStorage.setItem('comments', JSON.stringify(comments));
+            
+            // 更新评论显示
+            displayComments();
+            
+            // 重置表单
+            document.getElementById('comment-form').reset();
+            document.getElementById('comment-error').style.display = 'none';
+            
+            // 显示成功消息
+            const successMessage = document.documentElement.lang === 'zh-CN' ? 
+                '评论已发布' : 'Comment posted successfully';
+            alert(successMessage);
+            
+            return false;
+        }
+        
+        // 处理点赞功能
+        function handleLikeComment(commentId) {
+            // 获取当前用户
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            
+            // 检查用户是否登录
+            if (!currentUser) {
+                const errorMessage = document.documentElement.lang === 'zh-CN' ? 
+                    '请先登录后再点赞' : 'Please log in before liking a comment';
+                alert(errorMessage);
+                return;
+            }
+            
+            // 从localStorage获取现有评论
+            let comments = JSON.parse(localStorage.getItem('comments') || '[]');
+            
+            // 查找要点赞的评论
+            const commentIndex = comments.findIndex(comment => comment.id === commentId);
+            
+            if (commentIndex === -1) return;
+            
+            // 检查用户是否已经点赞
+            const comment = comments[commentIndex];
+            const userLikedIndex = comment.likedBy.indexOf(currentUser.username);
+            
+            if (userLikedIndex === -1) {
+                // 用户未点赞，添加点赞
+                comment.likes += 1;
+                comment.likedBy.push(currentUser.username);
+                
+                // 显示成功消息
+                const successMessage = document.documentElement.lang === 'zh-CN' ? 
+                    '点赞成功' : 'Liked successfully';
+                alert(successMessage);
+            } else {
+                // 用户已点赞，取消点赞
+                comment.likes -= 1;
+                comment.likedBy.splice(userLikedIndex, 1);
+                
+                // 显示成功消息
+                const successMessage = document.documentElement.lang === 'zh-CN' ? 
+                    '已取消点赞' : 'Unliked successfully';
+                alert(successMessage);
+            }
+            
+            // 更新localStorage
+            localStorage.setItem('comments', JSON.stringify(comments));
+            
+            // 更新评论显示
+            displayComments();
+        }
+        
+        // 显示所有评论
+        function displayComments() {
+            const commentsContainer = document.getElementById('comments-container');
+            
+            // 从localStorage获取评论
+            const comments = JSON.parse(localStorage.getItem('comments') || '[]');
+            
+            // 获取当前用户
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            
+            if (comments.length === 0) {
+                commentsContainer.innerHTML = `
+                    <div class="no-comments lang-zh">暂无评论，成为第一个评论的人吧！</div>
+                    <div class="no-comments lang-en">No comments yet. Be the first to comment!</div>
+                `;
+                return;
+            }
+            
+            // 按时间倒序排列评论
+            const sortedComments = [...comments].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            // 生成评论HTML
+            let commentsHTML = '';
+            
+            sortedComments.forEach(comment => {
+                // 格式化日期
+                const commentDate = new Date(comment.date);
+                const formattedDate = commentDate.toLocaleDateString(
+                    document.documentElement.lang === 'zh-CN' ? 'zh-CN' : 'en-US',
+                    { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }
+                );
+                
+                // 检查当前用户是否点赞过
+                const isLiked = currentUser && comment.likedBy.includes(currentUser.username);
+                const likeButtonClass = isLiked ? 'comment-like comment-liked' : 'comment-like';
+                const likeText = document.documentElement.lang === 'zh-CN' ? '点赞' : 'Like';
+                
+                commentsHTML += `
+                    <div class="comment-item" id="comment-${comment.id}">
+                        <div class="comment-header">
+                            <span class="comment-author">${comment.author}</span>
+                            <span class="comment-date">${formattedDate}</span>
+                        </div>
+                        <div class="comment-content">${comment.content}</div>
+                        <div class="comment-actions">
+                            <button class="${likeButtonClass}" onclick="handleLikeComment('${comment.id}')">
+                                <span class="lang-zh">点赞</span>
+                                <span class="lang-en">Like</span>
+                                <span class="like-count">(${comment.likes})</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            commentsContainer.innerHTML = commentsHTML;
+            
+            // 显示/隐藏相应语言的元素
+            toggleLanguageElements();
+        }
+        
+        // 根据当前语言显示/隐藏元素
+        function toggleLanguageElements() {
+            const lang = document.documentElement.lang;
+            const elementsZh = document.querySelectorAll('.lang-zh');
+            const elementsEn = document.querySelectorAll('.lang-en');
+            
+            elementsZh.forEach(el => {
+                if (el.tagName === 'BUTTON' || el.tagName === 'A' || el.tagName === 'SPAN') {
+                    el.style.display = lang === 'zh-CN' ? 'inline-block' : 'none';
+                } else {
+                    el.style.display = lang === 'zh-CN' ? 'block' : 'none';
+                }
+            });
+            
+            elementsEn.forEach(el => {
+                if (el.tagName === 'BUTTON' || el.tagName === 'A' || el.tagName === 'SPAN') {
+                    el.style.display = lang === 'en' ? 'inline-block' : 'none';
+                } else {
+                    el.style.display = lang === 'en' ? 'block' : 'none';
+                }
+            });
+            
+            // 更新药物选项卡状态
+            const medicationTabs = document.querySelectorAll('.medication-tab');
+            medicationTabs.forEach(tab => {
+                if ((lang === 'zh-CN' && tab.classList.contains('lang-zh')) || 
+                    (lang === 'en' && tab.classList.contains('lang-en'))) {
+                    if (tab.classList.contains('active')) {
+                        tab.style.display = 'inline-block';
+                    } else {
+                        tab.style.display = 'inline-block';
+                    }
+                } else {
+                    tab.style.display = 'none';
+                }
+            });
+        }
+        
+        // 药物信息相关功能
+        function switchMedicationTab(category) {
+            // 更新选项卡状态
+            const tabs = document.querySelectorAll('.medication-tab');
+            const isEnglish = document.documentElement.lang === 'en';
+            
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+                
+                // 中文选项卡
+                if (!isEnglish && tab.classList.contains('lang-zh')) {
+                    if ((tab.textContent === '推荐药物') && category === 'recommended') {
+                        tab.classList.add('active');
+                    } else if ((tab.textContent === '退烧药') && category === 'fever') {
+                        tab.classList.add('active');
+                    } else if ((tab.textContent === '感冒药') && category === 'cold') {
+                        tab.classList.add('active');
+                    } else if ((tab.textContent === '止咳药') && category === 'cough') {
+                        tab.classList.add('active');
+                    } else if ((tab.textContent === '所有药物') && category === 'all') {
+                        tab.classList.add('active');
+                    }
+                }
+                
+                // 英文选项卡
+                if (isEnglish && tab.classList.contains('lang-en')) {
+                    if ((tab.textContent === 'Recommended') && category === 'recommended') {
+                        tab.classList.add('active');
+                    } else if ((tab.textContent === 'Fever Reducers') && category === 'fever') {
+                        tab.classList.add('active');
+                    } else if ((tab.textContent === 'Cold Medicine') && category === 'cold') {
+                        tab.classList.add('active');
+                    } else if ((tab.textContent === 'Cough Medicine') && category === 'cough') {
+                        tab.classList.add('active');
+                    } else if ((tab.textContent === 'All Medications') && category === 'all') {
+                        tab.classList.add('active');
+                    }
+                }
+            });
+            
+            // 加载相应分类的药物
+            loadMedicationList(category);
+        }
+        
+        // 根据用户体温记录提供药物推荐
+        function updateMedicationRecommendation() {
+            const recommendationDiv = document.getElementById('medication-recommendation');
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            
+            if (!currentUser || !currentUser.temperatureRecords || currentUser.temperatureRecords.length === 0) {
+                // 没有体温记录
+                recommendationDiv.innerHTML = document.documentElement.lang === 'zh-CN' ?
+                    '<strong>个性化推荐</strong>：请记录您的体温，我们将为您提供针对性的药物建议。' :
+                    '<strong>Personalized Recommendation</strong>: Please record your temperature so we can provide targeted medication advice.';
+                return;
+            }
+            
+            // 获取最新体温记录
+            const sortedRecords = [...currentUser.temperatureRecords].sort((a, b) => new Date(b.date) - new Date(a.date));
+            const latestTemp = sortedRecords[0].temperature;
+            
+            // 获取用户当前选择的年龄组
+            const ageGroups = document.querySelectorAll('.age-toggle .active');
+            let userAgeGroup = 'adult'; // 默认成人
+            
+            ageGroups.forEach(group => {
+                if (group.textContent === '儿童' || group.textContent === 'Children') {
+                    userAgeGroup = 'child';
+                } else if (group.textContent === '老年人' || group.textContent === 'Seniors') {
+                    userAgeGroup = 'elderly';
+                } else if (group.textContent === '青少年' || group.textContent === 'Teenagers') {
+                    userAgeGroup = 'teen';
+                }
+            });
+            
+            // 根据体温和年龄组提供推荐
+            let recommendation = '';
+            
+            if (latestTemp >= 38.5) {
+                // 高烧状态
+                if (userAgeGroup === 'child') {
+                    recommendation = document.documentElement.lang === 'zh-CN' ?
+                        `<strong>高烧药物建议（儿童）</strong>：您的体温为${latestTemp}°C，属于高烧状态。建议：<ul>
+                            <li>可使用对乙酰氨基酚（泰诺林）口服液或栓剂，严格按照年龄剂量使用</li>
+                            <li>避免使用阿司匹林，可能引起Reye综合征</li>
+                            <li>请务必咨询儿科医生，获取专业指导</li>
+                            <li>若体温持续不退或超过39°C，应立即就医</li>
+                        </ul>` :
+                        `<strong>High Fever Medication Advice (Children)</strong>: Your temperature is ${latestTemp}°C, which is a high fever. Recommendations:<ul>
+                            <li>Use acetaminophen (Tylenol) oral solution or suppositories, strictly following age-appropriate dosing</li>
+                            <li>Avoid aspirin as it may cause Reye's syndrome</li>
+                            <li>Please consult a pediatrician for professional guidance</li>
+                            <li>If temperature persists or exceeds 39°C, seek medical attention immediately</li>
+                        </ul>`;
+                } else if (userAgeGroup === 'elderly') {
+                    recommendation = document.documentElement.lang === 'zh-CN' ?
+                        `<strong>高烧药物建议（老年人）</strong>：您的体温为${latestTemp}°C，属于高烧状态。建议：<ul>
+                            <li>可使用对乙酰氨基酚（泰诺林），避免使用含有多种成分的复合感冒药</li>
+                            <li>注意剂量控制，避免肝肾负担</li>
+                            <li>高烧状态下应尽快就医，不建议单纯依靠自我用药</li>
+                            <li>如有基础疾病或长期服药，请咨询医生药物相互作用</li>
+                        </ul>` :
+                        `<strong>High Fever Medication Advice (Elderly)</strong>: Your temperature is ${latestTemp}°C, which is a high fever. Recommendations:<ul>
+                            <li>Use acetaminophen (Tylenol), avoid multi-ingredient cold medications</li>
+                            <li>Control dosage carefully to avoid liver and kidney burden</li>
+                            <li>With high fever, seek medical attention promptly rather than relying solely on self-medication</li>
+                            <li>If you have underlying conditions or take medications regularly, consult your doctor about drug interactions</li>
+                        </ul>`;
+                } else {
+                    recommendation = document.documentElement.lang === 'zh-CN' ?
+                        `<strong>高烧药物建议</strong>：您的体温为${latestTemp}°C，属于高烧状态。建议：<ul>
+                            <li>可使用对乙酰氨基酚（泰诺林）或布洛芬（芬必得）</li>
+                            <li>交替使用两种退烧药可提高退烧效果，但需间隔4-6小时</li>
+                            <li>避免使用含酒精的退烧贴</li>
+                            <li>高烧不退超过24小时应就医检查</li>
+                        </ul>` :
+                        `<strong>High Fever Medication Advice</strong>: Your temperature is ${latestTemp}°C, which is a high fever. Recommendations:<ul>
+                            <li>Use acetaminophen (Tylenol) or ibuprofen (Advil)</li>
+                            <li>Alternating between these two medications can improve fever reduction, but maintain 4-6 hour intervals</li>
+                            <li>Avoid using alcohol-based cooling patches</li>
+                            <li>If fever persists for more than 24 hours, seek medical attention</li>
+                        </ul>`;
+                }
+            } else if (latestTemp >= 37.5 && latestTemp < 38.5) {
+                // 低烧状态
+                if (userAgeGroup === 'child') {
+                    recommendation = document.documentElement.lang === 'zh-CN' ?
+                        `<strong>低烧药物建议（儿童）</strong>：您的体温为${latestTemp}°C，属于低烧状态。建议：<ul>
+                            <li>可使用对乙酰氨基酚（泰诺林）口服液，按说明书剂量使用</li>
+                            <li>物理降温为主，药物为辅</li>
+                            <li>避免同时使用多种退烧药</li>
+                            <li>密切监测体温变化，如持续不退或有加重症状请就医</li>
+                        </ul>` :
+                        `<strong>Mild Fever Medication Advice (Children)</strong>: Your temperature is ${latestTemp}°C, which is a mild fever. Recommendations:<ul>
+                            <li>Use acetaminophen (Tylenol) oral solution according to instructions</li>
+                            <li>Focus on physical cooling methods, with medication as a supplement</li>
+                            <li>Avoid using multiple fever reducers simultaneously</li>
+                            <li>Closely monitor temperature changes, seek medical attention if persistent or worsening</li>
+                        </ul>`;
+                } else if (userAgeGroup === 'elderly') {
+                    recommendation = document.documentElement.lang === 'zh-CN' ?
+                        `<strong>低烧药物建议（老年人）</strong>：您的体温为${latestTemp}°C，属于低烧状态。建议：<ul>
+                            <li>可使用对乙酰氨基酚（泰诺林），建议从低剂量开始</li>
+                            <li>避免长时间使用布洛芬等非甾体抗炎药</li>
+                            <li>注意药物与慢性病用药的相互作用</li>
+                            <li>多休息，保持水分摄入，若体温持续不退请就医</li>
+                        </ul>` :
+                        `<strong>Mild Fever Medication Advice (Elderly)</strong>: Your temperature is ${latestTemp}°C, which is a mild fever. Recommendations:<ul>
+                            <li>Use acetaminophen (Tylenol), starting with a lower dose</li>
+                            <li>Avoid prolonged use of ibuprofen or other NSAIDs</li>
+                            <li>Be aware of interactions with medications for chronic conditions</li>
+                            <li>Rest adequately, maintain hydration, and seek medical attention if fever persists</li>
+                        </ul>`;
+                } else {
+                    recommendation = document.documentElement.lang === 'zh-CN' ?
+                        `<strong>低烧药物建议</strong>：您的体温为${latestTemp}°C，属于低烧状态。建议：<ul>
+                            <li>可使用对乙酰氨基酚（泰诺林）或布洛芬（芬必得）</li>
+                            <li>不建议同时使用多种退烧药</li>
+                            <li>充分休息，多饮水</li>
+                            <li>若伴有其他感冒症状，可考虑使用复方感冒药</li>
+                        </ul>` :
+                        `<strong>Mild Fever Medication Advice</strong>: Your temperature is ${latestTemp}°C, which is a mild fever. Recommendations:<ul>
+                            <li>Use acetaminophen (Tylenol) or ibuprofen (Advil)</li>
+                            <li>Not recommended to use multiple fever reducers simultaneously</li>
+                            <li>Get adequate rest and increase fluid intake</li>
+                            <li>If accompanied by other cold symptoms, consider using combination cold medications</li>
+                        </ul>`;
+                }
+            } else if (latestTemp >= 37.0 && latestTemp < 37.5) {
+                // 体温偏高
+                recommendation = document.documentElement.lang === 'zh-CN' ?
+                    `<strong>药物建议</strong>：您的体温为${latestTemp}°C，体温略高但未达到发烧标准。建议：<ul>
+                        <li>暂不需要服用退烧药物</li>
+                        <li>多休息，保持充足水分摄入</li>
+                        <li>如有不适感，可服用维生素C增强免疫力</li>
+                        <li>继续监测体温变化</li>
+                    </ul>` :
+                    `<strong>Medication Advice</strong>: Your temperature is ${latestTemp}°C, slightly elevated but not reaching fever standard. Recommendations:<ul>
+                        <li>No need for fever-reducing medication at this time</li>
+                        <li>Get plenty of rest and maintain adequate hydration</li>
+                        <li>If feeling unwell, consider taking vitamin C to boost immunity</li>
+                        <li>Continue monitoring temperature changes</li>
+                    </ul>`;
+            } else {
+                // 正常体温
+                recommendation = document.documentElement.lang === 'zh-CN' ?
+                    `<strong>药物建议</strong>：您的体温为${latestTemp}°C，体温正常。建议：<ul>
+                        <li>无需服用退烧或感冒药物</li>
+                        <li>可适当补充维生素C和锌等营养素增强免疫力</li>
+                        <li>保持良好生活习惯预防感冒</li>
+                        <li>如有其他不适症状，请具体咨询</li>
+                    </ul>` :
+                    `<strong>Medication Advice</strong>: Your temperature is ${latestTemp}°C, which is normal. Recommendations:<ul>
+                        <li>No need for fever reducers or cold medications</li>
+                        <li>Consider supplements like vitamin C and zinc to boost immunity</li>
+                        <li>Maintain good lifestyle habits to prevent colds</li>
+                        <li>If you have other symptoms, please consult specifically</li>
+                    </ul>`;
+            }
+            
+            recommendationDiv.innerHTML = recommendation;
+        }
+        
+        // 加载药物列表数据
+        function loadMedicationList(category) {
+            const medicationListDiv = document.getElementById('medication-list');
+            const medications = getMedicationData();
+            
+            // 根据分类筛选药物
+            let filteredMedications = medications;
+            
+            if (category === 'recommended') {
+                // 基于用户体温和年龄组推荐药物
+                filteredMedications = getRecommendedMedications();
+            } else if (category !== 'all') {
+                filteredMedications = medications.filter(med => med.category === category);
+            }
+            
+            // 生成药物HTML
+            let medicationsHTML = '';
+            
+            if (category === 'recommended' && filteredMedications.length === 0) {
+                medicationsHTML = `<div class="no-recommendations" style="text-align:center; padding:20px; color:#666;">
+                    ${document.documentElement.lang === 'zh-CN' ? 
+                    '请先记录您的体温，以获取个性化药物推荐' : 
+                    'Please record your temperature first to get personalized medication recommendations'}
+                </div>`;
+            } else {
+                filteredMedications.forEach(med => {
+                    // 根据当前语言选择显示内容
+                    const name = document.documentElement.lang === 'zh-CN' ? med.nameZh : med.nameEn;
+                    const description = document.documentElement.lang === 'zh-CN' ? med.descriptionZh : med.descriptionEn;
+                    const warning = document.documentElement.lang === 'zh-CN' ? med.warningZh : med.warningEn;
+                    const suitable = document.documentElement.lang === 'zh-CN' ? med.suitableZh : med.suitableEn;
+                    
+                    medicationsHTML += `
+                        <div class="medication-item">
+                            <div class="medication-name">${name}</div>
+                            <div class="medication-description">${description}</div>
+                            <div class="medication-suitable">${suitable}</div>
+                            <div class="medication-warning">${warning}</div>
+                        </div>
+                    `;
+                });
+            }
+            
+            medicationListDiv.innerHTML = medicationsHTML;
+        }
+        
+        // 药物数据
+        function getMedicationData() {
+            return [
+                {
+                    id: 1,
+                    category: 'fever',
+                    nameZh: '对乙酰氨基酚（泰诺林）',
+                    nameEn: 'Acetaminophen (Tylenol)',
+                    descriptionZh: '常用退烧药，也可缓解轻至中度疼痛',
+                    descriptionEn: 'Common fever reducer, also relieves mild to moderate pain',
+                    warningZh: '注意：大剂量可能损伤肝脏，不要超过推荐剂量',
+                    warningEn: 'Warning: High doses may damage the liver, do not exceed recommended dosage',
+                    suitableZh: '适用：各年龄段，包括儿童和孕妇（遵医嘱）',
+                    suitableEn: 'Suitable for: All age groups, including children and pregnant women (under medical guidance)'
+                },
+                {
+                    id: 2,
+                    category: 'fever',
+                    nameZh: '布洛芬（芬必得）',
+                    nameEn: 'Ibuprofen (Advil)',
+                    descriptionZh: '非甾体抗炎药，有退烧、止痛和抗炎作用',
+                    descriptionEn: 'NSAID with fever reducing, pain relieving and anti-inflammatory effects',
+                    warningZh: '注意：可能刺激胃黏膜，引起胃部不适',
+                    warningEn: 'Warning: May irritate stomach lining causing discomfort',
+                    suitableZh: '适用：成人和6个月以上儿童，不适合孕妇和胃溃疡患者',
+                    suitableEn: 'Suitable for: Adults and children over 6 months, not for pregnant women or those with ulcers'
+                },
+                {
+                    id: 3,
+                    category: 'cold',
+                    nameZh: '复方感冒灵颗粒',
+                    nameEn: 'Compound Cold Formula',
+                    descriptionZh: '缓解感冒引起的发热、头痛、鼻塞、流涕等症状',
+                    descriptionEn: 'Relieves fever, headache, nasal congestion and runny nose caused by colds',
+                    warningZh: '注意：含有多种成分，可能与其他药物相互作用',
+                    warningEn: 'Warning: Contains multiple ingredients, may interact with other medications',
+                    suitableZh: '适用：成人和12岁以上青少年，不适合孕妇和哺乳期妇女',
+                    suitableEn: 'Suitable for: Adults and teenagers over 12, not for pregnant or nursing women'
+                },
+                {
+                    id: 4,
+                    category: 'cold',
+                    nameZh: '板蓝根颗粒',
+                    nameEn: 'Banlangen Granules',
+                    descriptionZh: '中草药制剂，具有清热解毒、凉血利咽的功效',
+                    descriptionEn: 'Traditional Chinese herbal preparation for clearing heat and detoxifying',
+                    warningZh: '注意：部分人群可能出现过敏反应',
+                    warningEn: 'Warning: Some people may experience allergic reactions',
+                    suitableZh: '适用：轻度感冒、咽喉炎症状',
+                    suitableEn: 'Suitable for: Mild cold and throat inflammation symptoms'
+                },
+                {
+                    id: 5,
+                    category: 'cough',
+                    nameZh: '复方甘草片',
+                    nameEn: 'Compound Licorice Tablets',
+                    descriptionZh: '用于缓解咳嗽症状，具有祛痰作用',
+                    descriptionEn: 'Used to relieve cough symptoms with expectorant effects',
+                    warningZh: '注意：长期使用可能影响血压，不适合高血压患者',
+                    warningEn: 'Warning: Long-term use may affect blood pressure, not suitable for hypertension patients',
+                    suitableZh: '适用：干咳、痰少的咳嗽症状',
+                    suitableEn: 'Suitable for: Dry cough with little phlegm'
+                },
+                {
+                    id: 6,
+                    category: 'cough',
+                    nameZh: '氨溴索',
+                    nameEn: 'Ambroxol',
+                    descriptionZh: '祛痰药，促进呼吸道分泌物排出',
+                    descriptionEn: 'Expectorant that promotes respiratory secretion discharge',
+                    warningZh: '注意：偶有胃部不适，应饭后服用',
+                    warningEn: 'Warning: Occasional stomach discomfort, take after meals',
+                    suitableZh: '适用：痰多、粘稠的咳嗽',
+                    suitableEn: 'Suitable for: Cough with abundant, thick phlegm'
+                },
+                {
+                    id: 7,
+                    category: 'cold',
+                    nameZh: '维生素C片',
+                    nameEn: 'Vitamin C Tablets',
+                    descriptionZh: '补充维生素C，增强免疫力',
+                    descriptionEn: 'Supplements vitamin C to enhance immunity',
+                    warningZh: '注意：大剂量可能导致腹泻',
+                    warningEn: 'Warning: High doses may cause diarrhea',
+                    suitableZh: '适用：预防感冒，增强抵抗力',
+                    suitableEn: 'Suitable for: Cold prevention, strengthening resistance'
+                },
+                {
+                    id: 8,
+                    category: 'fever',
+                    nameZh: '阿司匹林',
+                    nameEn: 'Aspirin',
+                    descriptionZh: '具有解热、镇痛、抗炎和抗血小板作用',
+                    descriptionEn: 'Has antipyretic, analgesic, anti-inflammatory and antiplatelet effects',
+                    warningZh: '注意：不适用于18岁以下儿童和青少年，可能引起Reye综合征',
+                    warningEn: 'Warning: Not for children and teenagers under 18, may cause Reye\'s syndrome',
+                    suitableZh: '适用：成人发热，特别是有心血管疾病高风险的患者',
+                    suitableEn: 'Suitable for: Adult fever, especially those with high cardiovascular disease risk'
+                }
+            ];
+        }
+        
+        // 检查用户状态并更新界面
+        function checkUserStatus() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const loginRequired = document.getElementById('login-required');
+            const tempForm = document.getElementById('temperature-form');
+            const profileBtn = document.querySelector('.profile-btn');
+            
+            if (!currentUser) {
+                // 未登录状态
+                loginRequired.style.display = 'flex';
+                tempForm.style.display = 'none';
+            } else {
+                // 已登录状态
+                loginRequired.style.display = 'none';
+                tempForm.style.display = 'block';
+            }
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 从localStorage获取语言设置，如果没有则默认使用中文
+            const lang = localStorage.getItem('language') || 'zh-CN';
+            document.documentElement.lang = lang;
+            
+            // 设置日期输入框的语言
+            document.getElementById('temp-date').lang = lang === 'zh-CN' ? 'zh' : 'en';
+            
+            // 设置今天为体温记录表单中的默认日期
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            const dateInput = document.getElementById('temp-date');
+            dateInput.value = `${year}-${month}-${day}`;
+            dateInput.max = `${year}-${month}-${day}`;
+            dateInput.placeholder = lang === 'zh-CN' ? '请选择日期' : 'Select date';
+            
+            // 更新语言按钮状态
+            if (lang === 'zh-CN') {
+                document.getElementById('zh-btn').classList.add('active');
+                document.getElementById('en-btn').classList.remove('active');
+            } else {
+                document.getElementById('zh-btn').classList.remove('active');
+                document.getElementById('en-btn').classList.add('active');
+            }
+            
+            // 确保初始化时正确显示/隐藏语言元素
+            toggleLanguageElements();
+            
+            // 从localStorage获取年龄组设置
+            const savedAgeGroup = localStorage.getItem('userAgeGroup');
+            if (savedAgeGroup) {
+                if (savedAgeGroup === '老年人' || savedAgeGroup === 'Seniors') {
+                    setFontSize('large');
+                } else {
+                    setFontSize('normal');
+                }
+            }
+            
+            // 检查用户状态
+            checkUserStatus();
+            
+            // 添加体温记录表单提交处理
+            document.getElementById('temperature-form').addEventListener('submit', handleTemperatureSubmit);
+            
+            // 显示已有的体温记录（只在用户登录后触发）
+            if (JSON.parse(localStorage.getItem('currentUser'))) {
+                displayTemperatureRecords();
+            }
+            
+            // 更新健康建议
+            updateHealthAdvice();
+            
+            // 初始化药物信息
+            updateMedicationRecommendation();
+            loadMedicationList('fever');
+            
+            // 添加评论表单提交处理
+            document.getElementById('comment-form').addEventListener('submit', handleCommentSubmit);
+            
+            // 显示评论
+            displayComments();
+
+            // 初始化连连看游戏
+            initializeMemoryGame();
+        });
+        
+        // 添加新函数：更新登录/注册表单
+        function updateAuthForms() {
+            // 更新表单标签
+            const loginLabels = {
+                'username': document.documentElement.lang === 'zh-CN' ? '用户名' : 'Username',
+                'password': document.documentElement.lang === 'zh-CN' ? '密码' : 'Password',
+                'email': document.documentElement.lang === 'zh-CN' ? '电子邮箱' : 'Email',
+                'confirmPassword': document.documentElement.lang === 'zh-CN' ? '确认密码' : 'Confirm Password'
+            };
+            
+            // 更新登录表单
+            document.querySelectorAll('#login-form label').forEach(label => {
+                const forAttr = label.getAttribute('for');
+                if (forAttr === 'login-username') {
+                    label.textContent = loginLabels.username;
+                } else if (forAttr === 'login-password') {
+                    label.textContent = loginLabels.password;
+                }
+            });
+            
+            // 更新注册表单
+            document.querySelectorAll('#register-form label').forEach(label => {
+                const forAttr = label.getAttribute('for');
+                if (forAttr === 'register-username') {
+                    label.textContent = loginLabels.username;
+                } else if (forAttr === 'register-password') {
+                    label.textContent = loginLabels.password;
+                } else if (forAttr === 'register-email') {
+                    label.textContent = loginLabels.email;
+                } else if (forAttr === 'register-confirm-password') {
+                    label.textContent = loginLabels.confirmPassword;
+                }
+            });
+            
+            // 更新错误和成功消息
+            const loginError = document.getElementById('login-error');
+            const registerError = document.getElementById('register-error');
+            const registerSuccess = document.getElementById('register-success');
+            
+            if (loginError) {
+                loginError.innerHTML = `<span class="lang-zh">用户名或密码错误</span>
+                                      <span class="lang-en">Incorrect username or password</span>`;
+            }
+            
+            if (registerError) {
+                registerError.innerHTML = `<span class="lang-zh">密码不匹配</span>
+                                 <span class="lang-en">Passwords do not match</span>`;
+            }
+            
+            if (registerSuccess) {
+                registerSuccess.innerHTML = `<span class="lang-zh">注册成功！请登录</span>
+                                   <span class="lang-en">Registration successful! Please login</span>`;
+            }
+            
+            // 更新按钮文本
+            document.querySelectorAll('#login-form button[type="submit"]').forEach(button => {
+                button.textContent = document.documentElement.lang === 'zh-CN' ? '登录' : 'Login';
+            });
+            
+            document.querySelectorAll('#register-form button[type="submit"]').forEach(button => {
+                button.textContent = document.documentElement.lang === 'zh-CN' ? '注册' : 'Register';
+            });
+        }
+
+        // 连连看游戏相关变量
+        let gameTime = 0;
+        let gameMoves = 0;
+        let gameTimer = null;
+        let firstCard = null;
+        let secondCard = null;
+        let canFlip = true;
+        let matchedPairs = 0;
+
+        // 连连看游戏图标
+        const gameIcons = [
+            '🤒', '🤧', '🤢', '🤮', '😷', '💊', '🌡️', '🏥',
+            '🤒', '🤧', '🤢', '🤮', '😷', '💊', '🌡️', '🏥'
+        ];
+
+        // 初始化连连看游戏
+        function initializeMemoryGame() {
+            const container = document.getElementById('memory-game-container');
+            container.innerHTML = '';
+            
+            // 随机打乱图标顺序
+            const shuffledIcons = [...gameIcons].sort(() => Math.random() - 0.5);
+            
+            // 创建卡片
+            shuffledIcons.forEach((icon, index) => {
+                const card = document.createElement('div');
+                card.className = 'memory-card';
+                card.dataset.icon = icon;
+                card.dataset.index = index;
+                
+                const front = document.createElement('div');
+                front.className = 'memory-card-front';
+                front.textContent = '?';
+                
+                const back = document.createElement('div');
+                back.className = 'memory-card-back';
+                back.textContent = icon;
+                
+                card.appendChild(front);
+                card.appendChild(back);
+                
+                card.addEventListener('click', flipCard);
+                container.appendChild(card);
+            });
+            
+            // 重置游戏状态
+            resetGame();
+        }
+
+        // 翻转卡片
+        function flipCard() {
+            if (!canFlip || this.classList.contains('flipped') || this.classList.contains('matched')) {
+                return;
+            }
+            
+            this.classList.add('flipped');
+            
+            if (!firstCard) {
+                firstCard = this;
+                return;
+            }
+            
+            secondCard = this;
+            canFlip = false;
+            gameMoves++;
+            document.getElementById('game-moves').textContent = gameMoves;
+            
+            checkForMatch();
+        }
+
+        // 检查卡片是否匹配
+        function checkForMatch() {
+            const isMatch = firstCard.dataset.icon === secondCard.dataset.icon;
+            
+            if (isMatch) {
+                firstCard.classList.add('matched');
+                secondCard.classList.add('matched');
+                matchedPairs++;
+                
+                if (matchedPairs === gameIcons.length / 2) {
+                    clearInterval(gameTimer);
+                    setTimeout(() => {
+                        alert(document.documentElement.lang === 'zh-CN' ? 
+                            `恭喜你赢了！用时${gameTime}秒，共${gameMoves}步` : 
+                            `Congratulations! You won in ${gameTime}s with ${gameMoves} moves`);
+                    }, 500);
+                }
+            } else {
+                setTimeout(() => {
+                    firstCard.classList.remove('flipped');
+                    secondCard.classList.remove('flipped');
+                }, 1000);
+            }
+            
+            setTimeout(() => {
+                firstCard = null;
+                secondCard = null;
+                canFlip = true;
+            }, 1000);
+        }
+
+        // 重置游戏状态
+        function resetGame() {
+            gameTime = 0;
+            gameMoves = 0;
+            matchedPairs = 0;
+            firstCard = null;
+            secondCard = null;
+            canFlip = true;
+            
+            document.getElementById('game-time').textContent = gameTime;
+            document.getElementById('game-moves').textContent = gameMoves;
+            
+            if (gameTimer) {
+                clearInterval(gameTimer);
+            }
+            
+            gameTimer = setInterval(() => {
+                gameTime++;
+                document.getElementById('game-time').textContent = gameTime;
+            }, 1000);
+        }
+
+        // 开始新游戏
+        function startNewGame() {
+            initializeMemoryGame();
+        }
+    </script>
+</body>
+</html> 
