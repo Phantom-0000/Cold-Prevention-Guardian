@@ -22,20 +22,38 @@
             padding: 20px;
         }
         header {
-            background-color: #1e90ff;
+            background-image: url('https://github.com/Phantom-0000/Cold-Prevention-Guardian/blob/main/Gemini_Generated_Image_6udhb36udhb36udh.jpg?raw=true');
+            background-size: cover;
+            background-position: center;
             color: white;
-            padding: 15px 0;
+            padding: 60px 0;
             text-align: center;
             border-radius: 10px;
             margin-bottom: 20px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
             position: relative;
         }
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            z-index: 1;
+        }
+        header h1, header p {
+            position: relative;
+            z-index: 2;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
         .language-selector {
             position: absolute;
             top: 15px;
             right: 20px;
-            z-index: 100;
+            z-index: 2;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -147,7 +165,37 @@
         }
         h2 {
             color: #1e90ff;
-            margin-bottom: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2rem;
+            font-weight: bold;
+            padding: 15px 0;
+            border-bottom: 3px solid #1e90ff;
+            margin-top: 0;
+            position: relative;
+        }
+        .temp-chart h2,
+        .health-advice h2,
+        .medication-section h2,
+        .comments-section h2,
+        .memory-game h2 {
+            margin-bottom: 30px;
+            position: relative;
+        }
+        .temp-chart h2::after,
+        .health-advice h2::after,
+        .medication-section h2::after,
+        .comments-section h2::after,
+        .memory-game h2::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background-color: #1e90ff;
+            border-radius: 2px;
         }
         .chart-placeholder {
             height: 200px;
@@ -263,7 +311,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: rgba(255, 255, 255, 0.9);
+            background-color: rgba(255, 255, 255, 0.95);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -271,14 +319,47 @@
             text-align: center;
             padding: 20px;
             border-radius: 5px;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+        .login-required p {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 500;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            line-height: 1.4;
+            width: 100%;
+            text-align: center;
+            transform: translateY(-40px);
         }
         .login-required a {
             color: #1e90ff;
             text-decoration: none;
-            margin-top: 10px;
+            margin-top: -50px;
+            padding: 12px 30px;
+            border: 2px solid #1e90ff;
+            border-radius: 25px;
+            font-weight: 500;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            background-color: rgba(30, 144, 255, 0.1);
+            display: inline-block;
+            text-align: center;
+            min-width: 150px;
         }
         .login-required a:hover {
-            text-decoration: underline;
+            background-color: #1e90ff;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(30, 144, 255, 0.3);
+        }
+        .login-required .lang-zh,
+        .login-required .lang-en {
+            display: block;
+            width: 100%;
+            text-align: center;
         }
         
         .temp-form .form-row {
@@ -614,6 +695,97 @@
             font-weight: bold;
             color: #1e90ff;
         }
+
+        .temp-chart,
+        .health-advice,
+        .medication-section,
+        .comments-section,
+        .memory-game {
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+
+        .card-content {
+            background-color: #f0f8ff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            color: #333333;
+        }
+
+        .section-title {
+            color: #1e90ff;
+            margin: 60px 0 30px;
+            text-align: center;
+            font-size: 2.2rem;
+            font-weight: bold;
+            padding: 15px 0;
+            position: relative;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background-color: #1e90ff;
+            border-radius: 2px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .temp-chart,
+        .health-advice,
+        .medication-section,
+        .comments-section,
+        .memory-game {
+            margin-bottom: 20px;
+        }
+
+        .card-content {
+            background-color: #f0f8ff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            color: #333333;
+        }
+
+        .language-settings {
+            display: none;
+        }
+
+        .language-toggle {
+            display: none;
+        }
+
+        .language-btn {
+            display: none;
+        }
+        .nav-buttons {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .nav-btn {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            border: 1px solid white;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        .nav-btn:hover {
+            background-color: white;
+            color: #1e90ff;
+        }
     </style>
 </head>
 <body>
@@ -624,145 +796,168 @@
             <p class="lang-zh">您的个人健康助手</p>
             <p class="lang-en">Your Personal Health Assistant</p>
             
+            <div class="nav-buttons">
+                <a href="#temp-title-zh" class="nav-btn lang-zh">体温记录</a>
+                <a href="#health-title-zh" class="nav-btn lang-zh">健康建议</a>
+                <a href="#medication-title-zh" class="nav-btn lang-zh">药物信息</a>
+                <a href="#comments-title-zh" class="nav-btn lang-zh">用户评论</a>
+                <a href="#memory-title-zh" class="nav-btn lang-zh">连连看游戏</a>
+                
+                <a href="#temp-title-en" class="nav-btn lang-en">Temperature</a>
+                <a href="#health-title-en" class="nav-btn lang-en">Health Advice</a>
+                <a href="#medication-title-en" class="nav-btn lang-en">Medication</a>
+                <a href="#comments-title-en" class="nav-btn lang-en">Comments</a>
+                <a href="#memory-title-en" class="nav-btn lang-en">Memory Game</a>
+            </div>
+            
             <div class="language-selector">
                 <a href="profile.html" class="profile-btn lang-zh">个人信息</a>
                 <a href="profile.html" class="profile-btn lang-en">Profile</a>
-                <button type="button" id="zh-btn" class="language-btn active" onclick="setLanguage('zh-CN')">中文</button>
-                <button type="button" id="en-btn" class="language-btn" onclick="setLanguage('en')">English</button>
             </div>
         </header>
 
-        <div class="temp-chart">
-            <h2 class="lang-zh">体温记录（近7天）</h2>
-            <h2 class="lang-en">Temperature Record (Last 7 Days)</h2>
-            
-            <!-- 替换占位符为实际图表容器 -->
-            <div class="temp-chart-container">
-                <canvas id="temperatureChart"></canvas>
+        <!-- 隐藏语言切换按钮 -->
+        <div class="language-settings" style="display: none;">
+            <div class="language-toggle">
+                <button type="button" id="zh-btn" class="language-btn active" onclick="setLanguage('zh-CN')">中文</button>
+                <button type="button" id="en-btn" class="language-btn" onclick="setLanguage('en')">English</button>
             </div>
-            
-            <!-- 体温记录表单 -->
-            <div class="temp-form">
-                <form id="temperature-form">
-                    <div class="form-row">
-                        <label for="temp-date" class="lang-zh">日期:</label>
-                        <label for="temp-date" class="lang-en">Date:</label>
-                        <input type="date" id="temp-date" required
-                            oninvalid="this.setCustomValidity(document.documentElement.lang === 'zh-CN' ? '请选择日期' : 'Please select a date')"
-                            oninput="this.setCustomValidity('')"
-                            lang="en">
+        </div>
+
+        <h2 id="temp-title-zh" class="section-title lang-zh">体温记录（近7天）</h2>
+        <h2 id="temp-title-en" class="section-title lang-en">Temperature Record (Last 7 Days)</h2>
+        <div class="temp-chart">
+            <div class="card-content">
+                <!-- 替换占位符为实际图表容器 -->
+                <div class="temp-chart-container">
+                    <canvas id="temperatureChart"></canvas>
+                </div>
+                
+                <!-- 体温记录表单 -->
+                <div class="temp-form">
+                    <form id="temperature-form">
+                        <div class="form-row">
+                            <label for="temp-date" class="lang-zh">日期:</label>
+                            <label for="temp-date" class="lang-en">Date:</label>
+                            <input type="date" id="temp-date" required
+                                oninvalid="this.setCustomValidity(document.documentElement.lang === 'zh-CN' ? '请选择日期' : 'Please select a date')"
+                                oninput="this.setCustomValidity('')"
+                                lang="en">
+                        </div>
+                        <div class="form-row">
+                            <label for="temp-value" class="lang-zh">体温:</label>
+                            <label for="temp-value" class="lang-en">Temp:</label>
+                            <input type="number" id="temp-value" step="0.1" min="35" max="42" required
+                                oninvalid="this.setCustomValidity(document.documentElement.lang === 'zh-CN' ? '请输入35-42度之间的体温' : 'Please enter a temperature between 35-42°C')"
+                                oninput="this.setCustomValidity('')">
+                            <span class="lang-zh">°C</span>
+                            <span class="lang-en">°C</span>
+                        </div>
+                        <div class="form-row">
+                            <button type="submit" class="lang-zh">记录体温</button>
+                            <button type="submit" class="lang-en">Record Temperature</button>
+                        </div>
+                    </form>
+                    <div id="login-required" class="login-required" style="display: none;">
+                        <p class="lang-zh">请先登录以记录体温</p>
+                        <p class="lang-en">Please log in to record temperature</p>
+                        <a href="profile.html" class="lang-zh">去登录</a>
+                        <a href="profile.html" class="lang-en">Go to Login</a>
                     </div>
-                    <div class="form-row">
-                        <label for="temp-value" class="lang-zh">体温:</label>
-                        <label for="temp-value" class="lang-en">Temp:</label>
-                        <input type="number" id="temp-value" step="0.1" min="35" max="42" required
-                            oninvalid="this.setCustomValidity(document.documentElement.lang === 'zh-CN' ? '请输入35-42度之间的体温' : 'Please enter a temperature between 35-42°C')"
-                            oninput="this.setCustomValidity('')">
-                        <span class="lang-zh">°C</span>
-                        <span class="lang-en">°C</span>
-                    </div>
-                    <div class="form-row">
-                        <button type="submit" class="lang-zh">记录体温</button>
-                        <button type="submit" class="lang-en">Record Temperature</button>
-                    </div>
-                </form>
-                <div id="login-required" class="login-required" style="display: none;">
-                    <p class="lang-zh">请先登录以记录体温</p>
-                    <p class="lang-en">Please log in to record temperature</p>
-                    <a href="profile.html" class="lang-zh">去登录</a>
-                    <a href="profile.html" class="lang-en">Go to Login</a>
+                </div>
+                
+                <!-- 体温记录列表 -->
+                <div class="temp-records">
+                    <h3 class="lang-zh">最近记录</h3>
+                    <h3 class="lang-en">Recent Records</h3>
+                    <div id="temp-records-list"></div>
                 </div>
             </div>
-            
-            <!-- 体温记录列表 -->
-            <div class="temp-records">
-                <h3 class="lang-zh">最近记录</h3>
-                <h3 class="lang-en">Recent Records</h3>
-                <div id="temp-records-list"></div>
-            </div>
         </div>
 
+        <h2 id="health-title-zh" class="section-title lang-zh">健康建议</h2>
+        <h2 id="health-title-en" class="section-title lang-en">Health Advice</h2>
         <div class="health-advice">
-            <h2 class="lang-zh">健康建议</h2>
-            <h2 class="lang-en">Health Advice</h2>
-            
-            <div id="health-advice-content">
-                <!-- 健康建议内容将动态加载 -->
+            <div class="card-content">
+                <div id="health-advice-content">
+                    <!-- 健康建议内容将动态加载 -->
+                </div>
             </div>
         </div>
 
-        <!-- 药物信息区域 -->
+        <h2 id="medication-title-zh" class="section-title lang-zh">药物信息</h2>
+        <h2 id="medication-title-en" class="section-title lang-en">Medication Information</h2>
         <div class="medication-section">
-            <h2 class="lang-zh">药物信息</h2>
-            <h2 class="lang-en">Medication Information</h2>
-            
-            <div class="medication-tabs">
-                <button type="button" class="medication-tab active lang-zh" onclick="switchMedicationTab('recommended')">推荐药物</button>
-                <button type="button" class="medication-tab lang-zh" onclick="switchMedicationTab('fever')">退烧药</button>
-                <button type="button" class="medication-tab lang-zh" onclick="switchMedicationTab('cold')">感冒药</button>
-                <button type="button" class="medication-tab lang-zh" onclick="switchMedicationTab('cough')">止咳药</button>
-                <button type="button" class="medication-tab lang-zh" onclick="switchMedicationTab('all')">所有药物</button>
+            <div class="card-content">
+                <div class="medication-tabs">
+                    <button type="button" class="medication-tab active lang-zh" onclick="switchMedicationTab('recommended')">推荐药物</button>
+                    <button type="button" class="medication-tab lang-zh" onclick="switchMedicationTab('fever')">退烧药</button>
+                    <button type="button" class="medication-tab lang-zh" onclick="switchMedicationTab('cold')">感冒药</button>
+                    <button type="button" class="medication-tab lang-zh" onclick="switchMedicationTab('cough')">止咳药</button>
+                    <button type="button" class="medication-tab lang-zh" onclick="switchMedicationTab('all')">所有药物</button>
+                    
+                    <button type="button" class="medication-tab active lang-en" onclick="switchMedicationTab('recommended')">Recommended</button>
+                    <button type="button" class="medication-tab lang-en" onclick="switchMedicationTab('fever')">Fever Reducers</button>
+                    <button type="button" class="medication-tab lang-en" onclick="switchMedicationTab('cold')">Cold Medicine</button>
+                    <button type="button" class="medication-tab lang-en" onclick="switchMedicationTab('cough')">Cough Medicine</button>
+                    <button type="button" class="medication-tab lang-en" onclick="switchMedicationTab('all')">All Medications</button>
+                </div>
                 
-                <button type="button" class="medication-tab active lang-en" onclick="switchMedicationTab('recommended')">Recommended</button>
-                <button type="button" class="medication-tab lang-en" onclick="switchMedicationTab('fever')">Fever Reducers</button>
-                <button type="button" class="medication-tab lang-en" onclick="switchMedicationTab('cold')">Cold Medicine</button>
-                <button type="button" class="medication-tab lang-en" onclick="switchMedicationTab('cough')">Cough Medicine</button>
-                <button type="button" class="medication-tab lang-en" onclick="switchMedicationTab('all')">All Medications</button>
-            </div>
-            
-            <div id="medication-recommendation" class="medication-note">
-                <!-- 这里将显示基于体温的药物推荐 -->
-            </div>
-            
-            <div id="medication-list" class="medication-list">
-                <!-- 药物列表将由JS动态生成 -->
+                <div id="medication-recommendation" class="medication-note">
+                    <!-- 这里将显示基于体温的药物推荐 -->
+                </div>
+                
+                <div id="medication-list" class="medication-list">
+                    <!-- 药物列表将由JS动态生成 -->
+                </div>
             </div>
         </div>
         
-        <!-- 评论部分 -->
+        <h2 id="comments-title-zh" class="section-title lang-zh">用户评论</h2>
+        <h2 id="comments-title-en" class="section-title lang-en">User Comments</h2>
         <div class="comments-section">
-            <h2 class="lang-zh">用户评论</h2>
-            <h2 class="lang-en">User Comments</h2>
-            
-            <!-- 评论表单 -->
-            <div class="comment-form">
-                <form id="comment-form">
-                    <div class="form-group">
-                        <label for="comment-content" class="lang-zh">发表评论：</label>
-                        <label for="comment-content" class="lang-en">Post a comment:</label>
-                        <textarea id="comment-content" required></textarea>
-                    </div>
-                    <div id="comment-error" class="error-message">
-                        <span class="lang-zh">请先登录后再发表评论</span>
-                        <span class="lang-en">Please log in before posting a comment</span>
-                    </div>
-                    <button type="submit" class="lang-zh">发表评论</button>
-                    <button type="submit" class="lang-en">Post Comment</button>
-                </form>
-            </div>
-            
-            <!-- 评论列表 -->
-            <div class="comment-list">
-                <h3 class="lang-zh">所有评论</h3>
-                <h3 class="lang-en">All Comments</h3>
-                <div id="comments-container"></div>
+            <div class="card-content">
+                <!-- 评论表单 -->
+                <div class="comment-form">
+                    <form id="comment-form">
+                        <div class="form-group">
+                            <label for="comment-content" class="lang-zh">发表评论：</label>
+                            <label for="comment-content" class="lang-en">Post a comment:</label>
+                            <textarea id="comment-content" required></textarea>
+                        </div>
+                        <div id="comment-error" class="error-message">
+                            <span class="lang-zh">请先登录后再发表评论</span>
+                            <span class="lang-en">Please log in before posting a comment</span>
+                        </div>
+                        <button type="submit" class="lang-zh">发表评论</button>
+                        <button type="submit" class="lang-en">Post Comment</button>
+                    </form>
+                </div>
+                
+                <!-- 评论列表 -->
+                <div class="comment-list">
+                    <h3 class="lang-zh">所有评论</h3>
+                    <h3 class="lang-en">All Comments</h3>
+                    <div id="comments-container"></div>
+                </div>
             </div>
         </div>
 
-        <!-- 连连看游戏区域 -->
+        <h2 id="memory-title-zh" class="section-title lang-zh">连连看游戏</h2>
+        <h2 id="memory-title-en" class="section-title lang-en">Memory Game</h2>
         <div class="memory-game">
-            <h2 class="lang-zh">连连看游戏</h2>
-            <h2 class="lang-en">Memory Game</h2>
-            <div class="memory-game-container" id="memory-game-container"></div>
-            <div class="memory-game-controls">
-                <div class="memory-game-stats">
-                    <span class="lang-zh">时间: <span id="game-time">0</span>秒</span>
-                    <span class="lang-en">Time: <span id="game-time">0</span>s</span>
-                    <span class="lang-zh">步数: <span id="game-moves">0</span></span>
-                    <span class="lang-en">Moves: <span id="game-moves">0</span></span>
+            <div class="card-content">
+                <div class="memory-game-container" id="memory-game-container"></div>
+                <div class="memory-game-controls">
+                    <div class="memory-game-stats">
+                        <span class="lang-zh">时间: <span id="game-time">0</span>秒</span>
+                        <span class="lang-en">Time: <span id="game-time">0</span>s</span>
+                        <span class="lang-zh">步数: <span id="game-moves">0</span></span>
+                        <span class="lang-en">Moves: <span id="game-moves">0</span></span>
+                    </div>
+                    <button onclick="startNewGame()" class="lang-zh">新游戏</button>
+                    <button onclick="startNewGame()" class="lang-en">New Game</button>
                 </div>
-                <button onclick="startNewGame()" class="lang-zh">新游戏</button>
-                <button onclick="startNewGame()" class="lang-en">New Game</button>
             </div>
         </div>
     </div>
@@ -799,15 +994,6 @@
             
             // 更新日期输入框的语言
             document.getElementById('temp-date').lang = lang === 'zh-CN' ? 'zh' : 'en';
-            
-            // 更新按钮状态
-            if (lang === 'zh-CN') {
-                document.getElementById('zh-btn').classList.add('active');
-                document.getElementById('en-btn').classList.remove('active');
-            } else {
-                document.getElementById('zh-btn').classList.remove('active');
-                document.getElementById('en-btn').classList.add('active');
-            }
             
             // 更新所有语言相关元素
             toggleLanguageElements();
@@ -2190,15 +2376,21 @@
             const loginRequired = document.getElementById('login-required');
             const tempForm = document.getElementById('temperature-form');
             const profileBtn = document.querySelector('.profile-btn');
+            const tempRecords = document.querySelector('.temp-records');
+            const tempChartContainer = document.querySelector('.temp-chart-container');
             
             if (!currentUser) {
                 // 未登录状态
                 loginRequired.style.display = 'flex';
                 tempForm.style.display = 'none';
+                tempRecords.style.display = 'none';
+                tempChartContainer.style.display = 'none';
             } else {
                 // 已登录状态
                 loginRequired.style.display = 'none';
                 tempForm.style.display = 'block';
+                tempRecords.style.display = 'block';
+                tempChartContainer.style.display = 'block';
             }
         }
         
@@ -2210,25 +2402,6 @@
             
             // 设置日期输入框的语言
             document.getElementById('temp-date').lang = lang === 'zh-CN' ? 'zh' : 'en';
-            
-            // 设置今天为体温记录表单中的默认日期
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, '0');
-            const day = String(today.getDate()).padStart(2, '0');
-            const dateInput = document.getElementById('temp-date');
-            dateInput.value = `${year}-${month}-${day}`;
-            dateInput.max = `${year}-${month}-${day}`;
-            dateInput.placeholder = lang === 'zh-CN' ? '请选择日期' : 'Select date';
-            
-            // 更新语言按钮状态
-            if (lang === 'zh-CN') {
-                document.getElementById('zh-btn').classList.add('active');
-                document.getElementById('en-btn').classList.remove('active');
-            } else {
-                document.getElementById('zh-btn').classList.remove('active');
-                document.getElementById('en-btn').classList.add('active');
-            }
             
             // 确保初始化时正确显示/隐藏语言元素
             toggleLanguageElements();

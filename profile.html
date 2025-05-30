@@ -12,8 +12,8 @@
             font-family: 'Microsoft YaHei', sans-serif;
         }
         body {
-            background-color: #f0f8ff;
-            color: #333;
+            background-color: #000000;
+            color: #ffffff;
         }
         .container {
             max-width: 800px;
@@ -21,14 +21,32 @@
             padding: 20px;
         }
         header {
-            background-color: #1e90ff;
+            background-image: url('https://github.com/Phantom-0000/Cold-Prevention-Guardian/blob/main/Gemini_Generated_Image_6udhb36udhb36udh.jpg?raw=true');
+            background-size: cover;
+            background-position: center;
             color: white;
-            padding: 15px 0;
+            padding: 60px 0;
             text-align: center;
             border-radius: 10px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
             position: relative;
+        }
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            z-index: 1;
+        }
+        header h1, header p {
+            position: relative;
+            z-index: 2;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
         .back-btn {
             position: absolute;
@@ -40,17 +58,19 @@
             padding: 5px 10px;
             border: 1px solid white;
             border-radius: 15px;
+            z-index: 3;
         }
         .back-btn:hover {
             background-color: white;
             color: #1e90ff;
         }
         .profile-section {
-            background-color: white;
+            background-color: #f0f8ff;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
+            color: #333333;
         }
         .form-group {
             margin-bottom: 15px;
@@ -59,12 +79,15 @@
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
+            color: #333333;
         }
         .form-group input {
             width: 100%;
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 5px;
+            background-color: #ffffff;
+            color: #333333;
         }
         button {
             padding: 10px 20px;
@@ -167,13 +190,14 @@
         .age-selection {
             margin: 20px 0;
             padding: 15px;
-            background-color: #f8f9fa;
+            background-color: #ffffff;
             border-radius: 8px;
+            color: #333333;
         }
         
         .age-selection h3 {
             margin-bottom: 15px;
-            color: #333;
+            color: #333333;
         }
         
         .age-toggle {
@@ -186,7 +210,7 @@
         .age-toggle button {
             padding: 8px 15px;
             background-color: #e6e6e6;
-            color: #333;
+            color: #333333;
             border: none;
             border-radius: 20px;
             cursor: pointer;
@@ -195,20 +219,20 @@
         
         .age-toggle button:hover {
             background-color: #1e90ff;
-            color: white;
+            color: #ffffff;
         }
         
         .age-toggle button.active {
             background-color: #1e90ff;
-            color: white;
+            color: #ffffff;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <a href="感冒预防应用.html" class="back-btn lang-zh">返回主页</a>
-            <a href="感冒预防应用.html" class="back-btn lang-en">Back to Home</a>
+            <a href="Cold Prevention Guardian.html" class="back-btn lang-zh">返回主页</a>
+            <a href="Cold Prevention Guardian.html" class="back-btn lang-en">Back to Home</a>
             <h1 class="lang-zh">个人信息</h1>
             <h1 class="lang-en">Profile</h1>
             <div class="language-selector">
